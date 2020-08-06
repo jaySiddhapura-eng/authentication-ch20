@@ -600,25 +600,560 @@
 
 3. ```auth.component.ts``` is untouched
 
-   
+## Creating and Storing User data
 
-   
+1. Create the user model
 
-   
+   ~~~typescript
+   // constructor automatically create the instance of property and assign it to it 
+   export class User {
+       constructor(public email:string, 
+           public id : string, 
+           private _token: string, 
+           private _tokenExpirationDate : Date){} 
+   }
+   ~~~
 
-   
+2. Add get token method in the model
 
-   
+   ~~~typescript
+   get token(){
+       	// if token expired then return null
+           if(!this._tokenExpirationDate || new Date() > this._tokenExpirationDate){
+               return null;
+           }
+       	// or return the token 
+           return this._token;
+       }    
+   ~~~
 
-   
+3. Create the user subject in the ```auth.service.ts```
 
-   
+   ~~~typescript
+   userx = new Subject<User>();
+   ~~~
 
-   
+4. create the ```userAuthentication``` method
 
+   ~~~typescript
+   private userAuthentication(email:string, userId:string, token: string, expiresIn: number){
+         const expirationDate = new Date(
+               new Date().getTime() + expiresIn * 1000);
    
+         const user = new User(email, 
+                                 userId,
+                                 token,
+                                 expirationDate);
+   
+         this.user.next(user);
+   }
+   ~~~
 
+5. execute the above implemented method in signup and login under pipe under tap
+
+   ~~~typescript
+   // we can tap the response data from post request inside pipe
+   // to create the user object userAuthentication method is used
+   signUp(email:string, password:string){
+        return this.http.post<AuthResponseData>(this.signUpURL...)
+       		.pipe(
+            		catchError(this.handleError)
+            		,tap( resData => {
+                           this.userAuthentication(resData.email, resData.localId, 									  resData.idToken, +resData.expiresIn);
+                   	}
+                 ));       
+   }
+                    
+   login(email:string, password:string){   // only prepare the observable but no subscribe here
+          return this.http.post<AuthResponseData>(this.loginURL...)
+                 .pipe(
+            		catchError(this.handleError)
+                    ,tap( resData => {
+                            this.userAuthentication(resData.email, resData.localId, 
+                            resData.idToken, +resData.expiresIn);
+                        }
+                  ));
+       }                     
+   ~~~
+
+## Reflecting auth state in UI
+
+1. Inject router in the ```auth.component.ts```
+
+   ~~~typescript
+       constructor(private authSer:AuthService, 
+                   	private router:Router){}
+   ~~~
+
+2. Redirect to the recipe component upon successful login
+
+   ~~~typescript
+   // perform this task in authObservable's subscribe method
+    onSubmit(form: NgForm){
+        ...
+        authObservable.subscribe(
+           responseData => {
+               console.log(responseData);
+               this.isLoading = false;
+               this.router.navigate(['/recipes']);	// navigate to the recipe component
+           },
+           errorMessage => {
+               this.error = errorMessage;
+               console.log(errorMessage);
+               this.isLoading = false;
+               }
+           );
+    }
+   ~~~
+
+3. Inject ```auth.service.ts``` in ```header.component.ts``` and declare ```isAuthenticated``` property
+
+   ~~~typescript
+   // this property will be used in html to control the header
+   isAuthenticated = false;
    
+   constructor(private remote:DataStorageService, 
+                   private authService : AuthService){
+       }
+   ~~~
+
+4. Subscribe to the ```user``` subject of ```AuthService``` and at the end unsubscribe
+
+   ~~~typescript
+   private userSub : Subscription; // a property which holds the subscription
+   
+   ngOnInit(){
+       this.userSub = this.authService.user.subscribe(
+           user => {
+               // is authenticated = true if we receive user object from subscription
+               // is authenticated = false if we dont receive user object[null] from subscription 
+               this.isAuthenticated = !user ? false :true;
+           }
+       );
+   }
+   
+   ngOnDestroy(){
+       this.userSub.unsubscribe();
+   }
+   ~~~
+
+5. Update the ```header.component.html``` component
+
+   ~~~html
+   <div class="navbar-collapse">
+       
+        <ul class = "nav navbar-nav">
+            <li *ngIf = "isAuthenticated">
+                <a>Recipes</a>
+            </li>
+            <li>
+            	<a>Shopping List</a>
+            </li>
+            <li *ngIf = "!isAuthenticated">
+                <a>Authentication</a>
+            </li>  
+       </ul>
+       
+       <ul class="nav  navbar-nav navbar-right">
+           <li *ngIf = "isAuthenticated">
+               <a>Logout</a>
+           </li>
+           <li class="dropdown" *ngIf = "isAuthenticated">
+               <a>Manage</a>
+           </li>
+       </ul>
+       
+   </div>
+   ~~~
+
+## Make fetching work again
+
+1. Attaching token to the outgoing request [fetch]
+
+2. Inject ```authService``` in ```data-storage.service.ts``` home of ```storeRecipe()``` and ```fetchRecipe()``` methods
+
+   ~~~typescript
+   constructor(private http: HttpClient, 
+           private authService : AuthService){
+       }
+   ~~~
+
+3. Change the ```user``` subject in ```auth.service.ts```
+
+   ~~~typescript
+   // we can now user event after it got emitted [at any time]
+   user = new BehaviorSubject<User>(null);
+   ~~~
+
+4. Modify the ```fetchRecipe()``` of ```data-storage.service.ts``` [exhaustMap]
+
+   ~~~typescript
+   fetchRecipes(){
+       return this.authService.user.pipe(take(1),
+                   exhaustMap(user => { // it will subscribe the user get the data and unsubscribe it
+                       return this.http
+                           .get<Recipe[]>(this.remoteUrl,
+                               {
+                                   params: new HttpParams().set('auth', user.token)
+                               }
+                               );
+                   })
+                   ,map(recipes =>{               
+                       return recipes.map(recipe => {
+                           return {...recipe, ingredients: recipe.ingredients ? recipe.ingredients:[]
+                           };
+                       });           
+                   })
+                   ,tap(recipes => {
+                       this.recipeService.setRecipes(recipes);
+                    })
+       )
+   }
+   ~~~
+
+## Make save data work again [using interceptor]
+
+1. Create ```auth-interceptor.ts``` in ```auth``` folder
+
+   ~~~typescript
+   @Injectable()
+   export class AuthIntercepterService implements HttpInterceptor{
+        constructor(private authService: AuthService){} // injecting authService dependency
+       
+       // every class which implements HttpInterceptor must have following method  in it
+       intercept(){}
+   }
+   ~~~
+
+2. Implement ```Intercept()``` [Intercepter is executed before the request is being made]
+
+   ~~~typescript
+   // param1 : HttpRequest [req]
+   // param2 : Httphandler [next]
+   intercept(req:HttpRequest<any>, next: HttpHandler){
+       // will return the modified request 
+       // this modified request will have user credentials 
+       // idea is to authenticate the user before peroforming any post or get req.
+   }
+   ~~~
+
+3. ```Intercept()``` code
+
+   ~~~typescript
+   intercept(req:HttpRequest<any>, next: HttpHandler){
+        return this.authService.user.pipe(take(1),
+        exhaustMap(user => {
+            // if there is no user then 
+            // simply return the req. obtained from paramter of this intercept method1
+             if(!user){
+                 return next.handle(req);
+             }
+            // make the clone of inputed req. 
+            // then add the Http authentication param to that cloned req. 
+             const modifiedReq = req.clone({
+                 params: new HttpParams().set('auth',user.token)
+             });
+            // return the modified request which has actual req. as well as user auth
+             return next.handle(modifiedReq);
+         }));
+   }
+   ~~~
+
+4. Provide this interceptor in ```app.module.ts```
+
+   ~~~typescript
+   @NgModule({
+       providers: [{
+           provide: HTTP_INTERCEPTORS,
+           useClass: AuthIntercepterService,
+           multi: true
+       }]
+   })
+   ~~~
+
+5. Modify the ```data-storage.service.ts``` specifically ```fetchRecipes()```
+
+   ~~~typescript
+   fetchRecipes(){
+       return this.http.get<Recipe[]>(this.remoteUrl).pipe(
+           map(recipes =>{               // this is rxjs map operator
+               return recipes.map(recipe => {
+                     return {...recipe, ingredients: recipe.ingredients ? recipe.ingredients:[]};
+                           }
+                      );           // this map is javascript array method
+               }
+           )
+           ,tap(recipes => {
+                    this.recipeService.setRecipes(recipes);
+                  }
+            )
+        )
+   }
+   // storeRecipes() will remain same we are just itroducing the itercept so previously modified 
+   // fetch method will be remodified
+   ~~~
+
+## Adding Functionality to Logout
+
+1. Implement ```logout()``` in ```auth.service.ts```
+
+   ~~~typescript
+   logout(){
+      this.user.next(null);   // make the user object null
+   }
+   // user object is situated in the same service
+   ~~~
+
+2. Call this above implemented logout method in ```header.component.ts```
+
+   ~~~typescript
+   onLogout(){
+      this.authService.logout();
+   }
+   ~~~
+
+3. Add click listener to above implemented method in ```header.component.ts```
+
+   ~~~html
+   <li  *ngIf = "isAuthenticated">
+          <a style = "cursor:pointer;" (click) = "onLogout()">Logout</a>
+   </li>
+   ~~~
+
+4. Perform redirection of the user when logout is clicked
+
+   ~~~typescript
+   // redirection will be performed in logout() of the auth.service.ts 
+   // because logout will be performed from different locations
+   logout(){
+        this.user.next(null);   // make the user object null
+        this.router.navigate(['/auth']);
+   }
+   ~~~
+
+## Add Auto-Login
+
+1. When page reload happens, application restarts and old user credentials are wiped out
+
+2. Whenever we reload the page we need to login again to access the app
+
+3. In this section an auto login will be implemented 
+
+4. So that even after restart user remains logged in
+
+5. User can logout using Logout button or when user token get expired
+
+6. Idea is to store the user data into persistent storage [local storage]
+
+7. Store the logged user in the local storage as follow
+
+   ~~~typescript 
+   // this method is already implemented in previous sections
+   private userAuthentication(){
+       localStorage.setItem('userData', JSON.stringify(user));
+   }
+   // convert the user object into plain text using JSON.stringify() method
+   ~~~
+
+8. Implement ```autoLogin()``` in ```auth.service.ts```
+
+   ~~~typescript
+   autoLogin(){
+       // obtain the user data from local storage
+       const userData:{
+               email:string;
+               id:string;
+               _token:string;
+               _tokenExpirationDate:string;
+       } = JSON.parse(localStorage.getItem('userData')); 
+       // JSON.parse will converte text into object
+       // userData will hold the user which is stored in the local storage
+       
+       // if there is no user data available in local storage
+       // then dont perform autoLogin
+       if(!userData){
+           return;
+       } 
+       
+       // create the object of user which is already in local storage
+       const LoadedUser  = new User(userData.email, 
+                                    userData.id, 
+                                    userData._token, 
+                                    new Date(userData._tokenExpirationDate)
+       );
+       
+       // check if loaded user has valid token
+       // if yes then publish loaded user over the user subject
+       // user subject is implemented in the same service
+       if(LoadedUser.token){
+             this.user.next(LoadedUser);  
+       }
+   }
+   ~~~
+
+9. Add ```autoLogin()``` into the ```ngOnInit``` hook of ```app.component.ts```
+
+   ~~~typescript
+   export class AppComponent implements OnInit {
+     	constructor(private authSer: AuthService){}
+     	ngOnInit(){
+         this.authSer.autoLogin();
+     	}
+   }
+   ~~~
+
+## Add Auto Logout
+
+1. Even after log out click, we can still logged in by refreshing the application
+
+2. Because user data is stored in local storage
+
+3. This user data does not delete even after refreshing the page 
+
+4. And we directly do the login even without authentication upon reloading
+
+5. Also when user token expires, we are still logged in
+
+6. Clear the user data upon the execution of ```logout()``` method of ```auth.service.ts```
+
+   ~~~typescript
+   logout(){
+       // clear the user data locally stored
+       localStorage.removeItem('userData');
+       
+       // follow section 7 for this
+        if(this.tokenExpirationTimer){
+               clearTimeout(this.tokenExpirationTimer);
+           }
+           this.tokenExpirationTimer = null;
+   }
+   ~~~
+
+7. Implement ```autoLogout()``` in ```auth.service.ts```
+
+   ~~~typescript
+   // create the timer expiration property 
+   // this property will be used to check whether token timeout happened or not
+   private tokenExpirationTimer: any;
+   
+   // in autoLogout() we will set the above declared timer 
+   // and once that timer expires perform logout method
+   autoLogout(expirationDuration : number){
+         this.tokenExpirationTimer = setTimeout(() =>{
+               							this.logout();	
+           									},expirationDuration);
+   }
+   ~~~
+
+8. Call the ```autoLogout()``` method in ```userAuthentication()``` of the ```auth.service.ts```
+
+   ~~~typescript
+    private userAuthentication(......expiresIn: number){
+        this.user.next(user);
+        this.autoLogout(expiresIn*1000);	// autologout in [expiresIn*1000] duration
+        localStorage.setItem('userData', JSON.stringify(user));
+    }
+   ~~~
+
+9. Call ```autoLogout()``` in ```autoLogin()``` method of same service
+
+   ~~~typescript
+    autoLogin(){
+        if(LoadedUser.token){
+         this.user.next(LoadedUser);  
+         const expirationDuration = new Date(userData._tokenExpirationDate)
+         							  .getTime() - new Date().getTime();
+         this.autoLogout(expirationDuration);
+         }
+    }
+   
+   // basically when we calls autoLogout method, we are just setting the timer and when this timer overflow logout method is called 
+   // the value for timer is passed as a parameter to the autologin method
+   ~~~
+
+## Adding Auth guard
+
+1. The recipes tab is not visible unless user is logged in 
+
+2. Although user can navigate to the recipes component via URL 
+
+3. Bug: user can navigate to the recipes component without any authentication via URL
+
+4. To avoid user to navigate to recipes section without authentication a guard need to be implemented
+
+5. Create ```auth.guard.ts ```under auth folder
+
+   ~~~typescript
+   @Injectable({
+       providedIn: 'root'})
+   export class AuthGuard implements CanActivate {
+       // import authService and Router
+       constructor(private authService: AuthService,
+       private router: Router) { }
+       
+      //canActivate method
+   }
+   ~~~
+
+6. Implement ```canActivate()```
+
+   ~~~typescript
+   canActivate(route: ActivatedRouteSnapshot, router: RouterStateSnapshot):
+   // following things can be returned
+        | boolean
+        | UrlTree
+        | Promise<boolean | UrlTree>
+        | Observable<boolean | UrlTree> {
+        return this.authService.user.pipe(take(1),map(user => {
+            const isAuth = !!user;	
+            if (isAuth) {
+               return true;
+            }
+            return this.router.createUrlTree(['/auth']);
+        }));
+   }
+   ~~~
+
+7. Apply guard on the recipe route in ```app-routing.module.ts```
+
+   ~~~typescript
+   const appRoutes: Routes =  [
+       {   path: 'recipes', component: RecipesComponent, 
+           canActivate: [AuthGuard],
+           children: [...]
+       }    
+   ]
+   ~~~
+
+8. Take(1) in ```canActivate()``` method of ```Auth.guard.ts```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
