@@ -12,7 +12,7 @@
 * [Sending a Signup Request](#Sending-a-Signup-Request)<br>
 * [Adding Loading Spinner](#Adding-Loading-Spinner)<br>
 * [Handling an Error only for Signup Request](#Handling-an-Error-only-for-Signup-Request)<br>
-* [Sending Login Request](#Sending Login Request)<br>
+* [Sending Login Request](#Sending-Login-Request)<br>
 * [Handling The Error From Sign in as well as Signup Request](#Handling-The-Error-From-Sign-in-as-well-as-Signup-Request)<br>
 * [Creating and Storing User Data](#Creating-and-Storing-User-Data)<br>
 * [Reflecting Auth State in UI](#Reflecting-Auth-State-in-UI)<br>
