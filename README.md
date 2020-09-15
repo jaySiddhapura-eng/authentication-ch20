@@ -12,16 +12,16 @@
 * [Sending a Signup Request](#Sending-a-Signup-Request)<br>
 * [Adding Loading Spinner](#Adding-Loading-Spinner)<br>
 * [Handling an Error only for Signup Request](#Handling-an-Error-only-for-Signup-Request)<br>
-* [Sending Login Request](#Sending Login Request)<br>
+* [Sending Login Request](#Sending-Login-Request)<br>
 * [Handling The Error From Sign in as well as Signup Request](#Handling-The-Error-From-Sign-in-as-well-as-Signup-Request)<br>
-* [Creating and Storing User Data](#Creating and Storing User Data)<br>
-* [Reflecting Auth State in UI](#Reflecting Auth State in UI)<br>
-* [Make Fetching Work Again](#Make Fetching Work Again)<br>
-* [Make Save Data Work Again Using Interceptor](#Make Save Data Work Again Using Interceptor)<br>
-* [Adding Functionality to Logout](#)<br>
-* [Add Auto Login](#Add Auto Login)<br>
-* [Add Auto Logout](#Add Auto Logout)<br>
-* [Adding Auth Guard](#Adding Auth Guard)<br>
+* [Creating and Storing User Data](#Creating-and-Storing-User-Data)<br>
+* [Reflecting Auth State in UI](#Reflecting-Auth-State-in-UI)<br>
+* [Make Fetching Work Again](#Make-Fetching-Work-Again)<br>
+* [Make Save Data Work Again Using Interceptor](#Make-Save-Data-Work-Again-Using-Interceptor)<br>
+* [Adding Functionality to Logout](#Adding-Functionality-to-Logout)<br>
+* [Add Auto Login](#Add-Auto-Login)<br>
+* [Add Auto Logout](#Add-Auto-Logout)<br>
+* [Adding Auth Guard](#Adding-Auth-Guard)<br>
 
 ## Goal
 
