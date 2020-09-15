@@ -2,7 +2,7 @@
 
 ## Table of Contents  
 * [Goal](#Goal)<br>
-* [How Authentication Works ?](#How-Authentication-Works-?)<br>
+* [Authentication Working Principle](#Authentication-Working-Principle)<br>
 * [Diagram Showing Web Token Based Authentication](#Diagram-Showing-Web-Token-Based-Authentication)<br>
 * [Adding Authentication Section into Project](#Adding-Authentication-Section-into-Project)<br>
 * [Switching between Authentication Modes](#Switching-between-Authentication-Modes)<br>
@@ -30,7 +30,7 @@
 3. input 2: Password
 4. two buttons [Sign up | Login]
 
-## How Authentication Works ?
+## Authentication Working Principle
 
 1. In Conventional approach Authentication in **multiple page** web application is performed using session.
 2. In Angular based single page application, where communication between client and server happens using REST API
