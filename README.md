@@ -3,7 +3,6 @@
 ## Table of Contents  
 * [Goal](#Goal)<br>
 * [Authentication Working Principle](#Authentication-Working-Principle)<br>
-* [Diagram Showing Web Token Based Authentication](#Diagram-Showing-Web-Token-Based-Authentication)<br>
 * [Adding Authentication Section into Project](#Adding-Authentication-Section-into-Project)<br>
 * [Switching between Authentication Modes](#Switching-between-Authentication-Modes)<br>
 * [Handling Form Inputs ](#Handling-Form-Inputs)<br>
@@ -33,15 +32,20 @@
 ## Authentication Working Principle
 
 1. In Conventional approach Authentication in **multiple page** web application is performed using session.
+
 2. In Angular based single page application, where communication between client and server happens using REST API
+
 3. And the authentication in Angular app happens over **JSON web token**
+
 4. When Angular client sends authentication request to server, server responses with web token if authentication credentials are valid
+
 5. Web token includes ENCODED string with meta data
+
 6. Web token does not include the encrypted string
 
-## Diagram Showing Web Token Based Authentication
+7. Diagram Showing Web Token Based Authentication
 
-![auth diagram](assets/authDiagram.PNG)
+   ![auth diagram](assets/authDiagram.PNG)
 
 ## Adding Authentication Section into Project
 
