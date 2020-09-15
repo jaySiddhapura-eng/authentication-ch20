@@ -22,14 +22,14 @@
 * [Add Auto Logout](#Add-Auto-Logout)<br>
 * [Adding Auth Guard](#Adding-Auth-Guard)<br>
 
-## Goal
+## Goal [:arrow_up:](#Table-of-Contents )<br>
 
 1. Create an authentication page with two input fields
 2. input 1: Email
 3. input 2: Password
 4. two buttons [Sign up | Login]
 
-## Authentication Working Principle
+## Authentication Working Principle [:arrow_up:](#Table-of-Contents )<br>
 
 1. In Conventional approach Authentication in **multiple page** web application is performed using session.
 
@@ -47,7 +47,7 @@
 
    ![auth diagram](assets/authDiagram.PNG)
 
-## Adding Authentication Section into Project
+## Adding Authentication Section into Project [:arrow_up:](#Table-of-Contents )<br>
 
 1. Create the component which holds the authentication logic and templet
 
