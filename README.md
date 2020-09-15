@@ -1,5 +1,28 @@
 # Authentication
 
+## Table of Contents  
+* [Goal](#Goal)<br>
+* [How Authentication Works ?](#How-Authentication-Works-?)<br>
+* [Diagram Showing Web Token Based Authentication](#Diagram-Showing-Web-Token-Based-Authentication)<br>
+* [Adding Authentication Section into Project](#Adding-Authentication-Section-into-Project)<br>
+* [Switching between Authentication Modes](#Switching-between-Authentication-Modes)<br>
+* [Handling Form Inputs ](#Handling-Form-Inputs)<br>
+* [Firebase Setup](#Firebase-Setup)<br>
+* [Preparing Signup Request](#Preparing-Signup-Request)<br>
+* [Sending a Signup Request](#Sending-a-Signup-Request)<br>
+* [Adding Loading Spinner](#Adding-Loading-Spinner)<br>
+* [Handling an Error only for Signup Request](#Handling-an-Error-only-for-Signup-Request)<br>
+* [Sending Login Request](#Sending Login Request)<br>
+* [Handling The Error From Sign in as well as Signup Request](#Handling-The-Error-From-Sign-in-as-well-as-Signup-Request)<br>
+* [Creating and Storing User Data](#Creating-and-Storing-User-Data)<br>
+* [Reflecting Auth State in UI](#Reflecting-Auth-State-in-UI)<br>
+* [Make Fetching Work Again](#Make-Fetching-Work-Again)<br>
+* [Make Save Data Work Again Using Interceptor](#Make-Save-Data-Work-Again-Using-Interceptor)<br>
+* [Adding Functionality to Logout](#Adding-Functionality-to-Logout)<br>
+* [Add Auto Login](#Add-Auto-Login)<br>
+* [Add Auto Logout](#Add-Auto-Logout)<br>
+* [Adding Auth Guard](#Adding-Auth-Guard)<br>
+
 ## Goal
 
 1. Create an authentication page with two input fields
@@ -7,7 +30,7 @@
 3. input 2: Password
 4. two buttons [Sign up | Login]
 
-## How authentication works ?
+## How Authentication Works ?
 
 1. In Conventional approach Authentication in **multiple page** web application is performed using session.
 2. In Angular based single page application, where communication between client and server happens using REST API
@@ -16,7 +39,7 @@
 5. Web token includes ENCODED string with meta data
 6. Web token does not include the encrypted string
 
-## Diagram showing web token based authentication
+## Diagram Showing Web Token Based Authentication
 
 ![auth diagram](assets/authDiagram.PNG)
 
@@ -100,7 +123,7 @@
    </div>
    ~~~
 
-## Switching between Authentication modes
+## Switching between Authentication Modes
 
 1. Switch between Login / Sign in mode
 
@@ -191,7 +214,7 @@
 
    ![auth2](assets/authentication2.PNG)
 
-## Preparing Signup request
+## Preparing Signup Request
 
 1. Create ```auth.service.ts``` in auth folder
 
@@ -263,7 +286,7 @@
    }
    ~~~
 
-## Sending a sign up request
+## Sending a Signup Request
 
 1. Inject the ```AuthService``` into ```auth.component.ts```
 
@@ -395,7 +418,7 @@
    </div>    
    ~~~
 
-## Handling an Error [only for Signup request]
+## Handling an Error only for Signup Request
 
 1. Declaring property name ```error : string``` in the ```auth.component.ts```
 
@@ -454,7 +477,7 @@
    );
    ```
 
-## Sending Login request
+## Sending Login Request
 
 1. Obtain URL for Login from firebase API doc
 
@@ -541,7 +564,7 @@
    }
    ~~~
 
-## Handling the error from sign in as well as signup request
+## Handling The Error From Sign in as well as Signup Request
 
 1. Centralizing the error handling by implementing ```handleError()``` method in ```auth.service.ts```
 
@@ -600,7 +623,7 @@
 
 3. ```auth.component.ts``` is untouched
 
-## Creating and Storing User data
+## Creating and Storing User Data
 
 1. Create the user model
 
@@ -676,7 +699,7 @@
        }                     
    ~~~
 
-## Reflecting auth state in UI
+## Reflecting Auth State in UI
 
 1. Inject router in the ```auth.component.ts```
 
@@ -766,7 +789,7 @@
    </div>
    ~~~
 
-## Make fetching work again
+## Make Fetching Work Again
 
 1. Attaching token to the outgoing request [fetch]
 
@@ -811,7 +834,7 @@
    }
    ~~~
 
-## Make save data work again [using interceptor]
+## Make Save Data Work Again Using Interceptor
 
 1. Create ```auth-interceptor.ts``` in ```auth``` folder
 
@@ -931,7 +954,7 @@
    }
    ~~~
 
-## Add Auto-Login
+## Add Auto Login
 
 1. When page reload happens, application restarts and old user credentials are wiped out
 
@@ -1071,7 +1094,7 @@
    // the value for timer is passed as a parameter to the autologin method
    ~~~
 
-## Adding Auth guard
+## Adding Auth Guard
 
 1. The recipes tab is not visible unless user is logged in 
 
