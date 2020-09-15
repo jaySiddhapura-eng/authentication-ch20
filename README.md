@@ -22,14 +22,18 @@
 * [Add Auto Logout](#Add-Auto-Logout)<br>
 * [Adding Auth Guard](#Adding-Auth-Guard)<br>
 
-## Goal [:arrow_up:](#Table-of-Contents )<br>
+## Goal 
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Create an authentication page with two input fields
 2. input 1: Email
 3. input 2: Password
 4. two buttons [Sign up | Login]
 
-## Authentication Working Principle [:arrow_up:](#Table-of-Contents )<br>
+## Authentication Working Principle 
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. In Conventional approach Authentication in **multiple page** web application is performed using session.
 
@@ -47,7 +51,9 @@
 
    ![auth diagram](assets/authDiagram.PNG)
 
-## Adding Authentication Section into Project [:arrow_up:](#Table-of-Contents )<br>
+## Adding Authentication Section into Project
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Create the component which holds the authentication logic and templet
 
@@ -127,7 +133,9 @@
    </div>
    ~~~
 
-## Switching between Authentication Modes [:arrow_up:](#Table-of-Contents )<br>
+## Switching between Authentication Modes 
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Switch between Login / Sign in mode
 
@@ -163,7 +171,9 @@
    </div>
    ~~~
 
-## Handling Form Inputs [:arrow_up:](#Table-of-Contents )<br>
+## Handling Form Inputs
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Add tags on the input fields
 
@@ -206,7 +216,9 @@
    }
    ~~~
 
-## Firebase Setup [:arrow_up:](#Table-of-Contents )<br>
+## Firebase Setup 
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Set the database rules
 
@@ -218,7 +230,9 @@
 
    ![auth2](assets/authentication2.PNG)
 
-## Preparing Signup Request [:arrow_up:](#Table-of-Contents )<br>
+## Preparing Signup Request 
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Create ```auth.service.ts``` in auth folder
 
@@ -290,7 +304,9 @@
    }
    ~~~
 
-## Sending a Signup Request [:arrow_up:](#Table-of-Contents )<br>
+## Sending a Signup Request 
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Inject the ```AuthService``` into ```auth.component.ts```
 
@@ -339,7 +355,9 @@
     );
    ```
 
-## Adding Loading Spinner  [:arrow_up:](#Table-of-Contents )<br>
+## Adding Loading Spinner  
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Loading spinner will be appear when app is performing request to the firebase
 
@@ -422,7 +440,9 @@
    </div>    
    ~~~
 
-## Handling an Error only for Signup Request [:arrow_up:](#Table-of-Contents )<br>
+## Handling an Error only for Signup Request 
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Declaring property name ```error : string``` in the ```auth.component.ts```
 
@@ -481,7 +501,9 @@
    );
    ```
 
-## Sending Login Request [:arrow_up:](#Table-of-Contents )<br>
+## Sending Login Request 
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Obtain URL for Login from firebase API doc
 
@@ -568,7 +590,9 @@
    }
    ~~~
 
-## Handling The Error From Sign in as well as Signup Request [:arrow_up:](#Table-of-Contents )<br>
+## Handling The Error From Sign in as well as Signup Request 
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Centralizing the error handling by implementing ```handleError()``` method in ```auth.service.ts```
 
@@ -627,7 +651,9 @@
 
 3. ```auth.component.ts``` is untouched
 
-## Creating and Storing User Data [:arrow_up:](#Table-of-Contents )<br>
+## Creating and Storing User Data
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Create the user model
 
@@ -703,7 +729,9 @@
        }                     
    ~~~
 
-## Reflecting Auth State in UI [:arrow_up:](#Table-of-Contents )<br>
+## Reflecting Auth State in UI 
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Inject router in the ```auth.component.ts```
 
@@ -793,7 +821,9 @@
    </div>
    ~~~
 
-## Make Fetching Work Again [:arrow_up:](#Table-of-Contents )<br>
+## Make Fetching Work Again 
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Attaching token to the outgoing request [fetch]
 
@@ -838,7 +868,9 @@
    }
    ~~~
 
-## Make Save Data Work Again Using Interceptor [:arrow_up:](#Table-of-Contents )<br>
+## Make Save Data Work Again Using Interceptor 
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Create ```auth-interceptor.ts``` in ```auth``` folder
 
@@ -920,7 +952,9 @@
    // fetch method will be remodified
    ~~~
 
-## Adding Functionality to Logout [:arrow_up:](#Table-of-Contents )<br>
+## Adding Functionality to Logout
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Implement ```logout()``` in ```auth.service.ts```
 
@@ -958,7 +992,9 @@
    }
    ~~~
 
-## Add Auto Login [:arrow_up:](#Table-of-Contents )<br>
+## Add Auto Login
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. When page reload happens, application restarts and old user credentials are wiped out
 
@@ -1029,7 +1065,9 @@
    }
    ~~~
 
-## Add Auto Logout [:arrow_up:](#Table-of-Contents )<br>
+## Add Auto Logout 
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. Even after log out click, we can still logged in by refreshing the application
 
@@ -1098,7 +1136,9 @@
    // the value for timer is passed as a parameter to the autologin method
    ~~~
 
-## Adding Auth Guard [:arrow_up:](#Table-of-Contents )<br>
+## Adding Auth Guard
+
+## 	[:arrow_up:](#Table-of-Contents )<br>
 
 1. The recipes tab is not visible unless user is logged in 
 
